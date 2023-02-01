@@ -49,9 +49,6 @@ export default function Signup({ setScreen }) {
       <span onClick={() => setScreen("login")}>
         Already have an account? Login
       </span>
-      <button onClick={()=>setScreen("login")}>
-        Sign in with github
-      </button>
     </div>
   );
 }

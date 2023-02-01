@@ -1,29 +1,33 @@
-import React, { useState, useEffect } from "react";
 import { Auth, API } from "aws-amplify";
+import React, { useState, useEffect } from "react";
+import Login from "./components/Signin";
+import Signup from "./components/Signup";
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [screen, setScreen] = useState("signup");
 
+  // Get the current logged in user info
   const getUser = async () => {
     const user = await Auth.currentUserInfo();
-    console.log(user);
     if (user) setUser(user);
     setLoading(false);
   };
 
-  const signIn = async () =>
-    await Auth.federatedSignIn({
-      provider: "GitHub",
-    });
+  // Logout the authenticated user
+  const signOut = async () => {
+    await Auth.signOut();
+    setUser(null);
+  };
 
-  const signOut = async () => await Auth.signOut();
-
+  // Send an API call to the /public endpoint
   const publicRequest = async () => {
     const response = await API.get("api", "/public");
     alert(JSON.stringify(response));
   };
 
+  // Send an API call to the /private endpoint with authentication details.
   const privateRequest = async () => {
     try {
       const response = await API.get("api", "/private", {
@@ -39,6 +43,7 @@ const App = () => {
     }
   };
 
+  // Check if there's any user on mount
   useEffect(() => {
     getUser();
   }, []);
@@ -47,24 +52,20 @@ const App = () => {
 
   return (
     <div className="container">
-      <h2>LOGIN with github</h2>
+      <h2>SST + Cognito + React</h2>
       {user ? (
         <div className="profile">
-          <p>Welcome {user.attributes.name}!</p>
-          <img
-            src={user.attributes.picture}
-            style={{ borderRadius: "50%" }}
-            width={100}
-            height={100}
-            alt=""
-          />
+          <p>Welcome {user.attributes.given_name}!</p>
           <p>{user.attributes.email}</p>
           <button onClick={signOut}>logout</button>
         </div>
       ) : (
         <div>
-          <p>Not signed in</p>
-          <button onClick={signIn}>login</button>
+          {screen === "signup" ? (
+            <Signup setScreen={setScreen} />
+          ) : (
+            <Login setScreen={setScreen} setUser={setUser} />
+          )}
         </div>
       )}
       <div className="api-section">

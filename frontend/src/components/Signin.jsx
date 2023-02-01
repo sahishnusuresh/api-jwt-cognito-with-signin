@@ -4,21 +4,7 @@ import { Auth } from "aws-amplify";
 export default function Login({ setScreen, setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const signIn=async()=>
-    await Auth.federatedSignIn({
-        provider:"Github"
-    })
-  
-  const getUser = async () => {
-    const user = await Auth.currentUserInfo();
-    console.log(user);
-    if (user) setUser(user);
-    setloading(false);
-  };
 
-  
-
-  const signOut = async () => await Auth.signOut();
   return (
     <div className="login">
       <input
@@ -42,7 +28,6 @@ export default function Login({ setScreen, setUser }) {
       >
         Login
       </button>
-      <button onClick={signIn}>Login with github</button>
       <span onClick={() => setScreen("signup")}>
         Don't have an account? Sign up
       </span>
